@@ -129,6 +129,27 @@ async function handleLogin(e) {
     }
 }
 
+// js/auth.js - Tambahkan fungsi ini sementara untuk testing
+async function createTestAccount() {
+    const email = 'test@example.com';
+    const password = 'password123';
+    
+    const { data, error } = await supabase.auth.signUp({
+        email: email,
+        password: password,
+    });
+    
+    if (error) {
+        console.error('Error creating account:', error.message);
+    } else {
+        console.log('Account created successfully:', data);
+        alert('Akun berhasil dibuat! Silakan login dengan email: ' + email);
+    }
+}
+
+// Panggil fungsi ini sekali saja di console browser
+// createTestAccount();
+
 // Fungsi untuk menangani logout
 async function handleLogout() {
     try {
