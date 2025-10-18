@@ -1,1 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Aplikasi Materi Pembelajaran</title>
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Dashboard Materi</h1>
+            <div class="user-info">
+                <span id="user-email"></span>
+                <button id="logout-btn" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </header>
 
+    <main class="container">
+        <h2>Daftar Materi Pembelajaran</h2>
+        <div id="materials-container" class="materials-grid">
+            <!-- Materi akan dimuat di sini -->
+        </div>
+    </main>
+
+    <!-- Modal untuk menampilkan konten lengkap -->
+    <div id="material-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2 id="modal-title"></h2>
+            <p id="modal-content"></p>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/dashboard.js"></script>
+</body>
+</html>
