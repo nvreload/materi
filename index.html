@@ -4,9 +4,266 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manajemen Materi Pembelajaran</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* Reset & Base Styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Auth Pages */
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .auth-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            width: 100%;
+            max-width: 400px;
+            padding: 30px;
+        }
+
+        .auth-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .auth-header h1 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .auth-header p {
+            color: var(--gray);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+            outline: none;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray);
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+
+        .auth-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .auth-footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 14px;
+            margin-top: 5px;
+            display: none;
+        }
+
+        /* Dashboard */
+        .dashboard-header {
+            background-color: white;
+            box-shadow: var(--shadow);
+            padding: 15px 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-email {
+            color: var(--gray);
+        }
+
+        .btn-logout {
+            background-color: var(--danger);
+            padding: 8px 15px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        .btn-logout:hover {
+            background-color: #d1146a;
+        }
+
+        .dashboard-content {
+            padding: 30px 0;
+        }
+
+        .section-title {
+            margin-bottom: 25px;
+            color: var(--dark);
+        }
+
+        /* Materials Grid */
+        .materials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .material-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .material-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+
+        .card-date {
+            font-size: 14px;
+            color: var(--gray);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .card-description {
+            color: var(--gray);
+            margin-bottom: 15px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            padding: 0 20px 20px;
+        }
+
+        .btn-read-more {
+            background-color: var(--success);
+            color: white;
+            padding: 8px 15px;
+            font-size: 14px;
+            width: auto;
+        }
+
+        .btn-read-more:hover {
+            background-color: #3ab0d9;
+        }
+
+        /* Modal */
         .modal {
             display: none;
             position: fixed;
@@ -16,338 +273,467 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 1000;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            padding: 20px;
         }
+
         .modal-content {
             background-color: white;
-            padding: 2rem;
-            border-radius: 0.5rem;
-            max-width: 90%;
-            max-height: 90%;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 700px;
+            max-height: 80vh;
             overflow-y: auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+            width: auto;
+            padding: 0;
+        }
+
+        .btn-close:hover {
+            color: var(--dark);
+            background: none;
+            transform: none;
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .modal-content-text {
+            line-height: 1.8;
+            color: var(--dark);
+        }
+
+        /* Loading & Empty States */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+
+        .empty-state i {
+            font-size: 50px;
+            margin-bottom: 15px;
+            color: #ddd;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .user-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .materials-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen">
-    <!-- Halaman Login -->
-    <div id="login-page" class="flex items-center justify-center min-h-screen">
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-            <h1 class="text-2xl font-bold text-center mb-6">Login ke Sistem</h1>
+<body>
+    <!-- Login Page -->
+    <div id="login-page" class="auth-container">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1><i class="fas fa-book-open"></i> MateriKu</h1>
+                <p>Masuk ke akun Anda</p>
+            </div>
             <form id="login-form">
-                <div class="mb-4">
-                    <label for="email" class="block text-gray-700 mb-2">Email</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Masukkan email"
-                        required
-                    >
-                    <p id="email-error" class="text-red-500 text-sm mt-1 hidden">Email tidak valid</p>
+                <div class="form-group">
+                    <label for="login-email">Email</label>
+                    <input type="email" id="login-email" class="form-control" placeholder="nama@contoh.com" required>
+                    <div class="error-message" id="login-email-error"></div>
                 </div>
-                <div class="mb-6">
-                    <label for="password" class="block text-gray-700 mb-2">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="Masukkan password"
-                        minlength="6"
-                        required
-                    >
-                    <p id="password-error" class="text-red-500 text-sm mt-1 hidden">Password minimal 6 karakter</p>
+                <div class="form-group">
+                    <label for="login-password">Password</label>
+                    <input type="password" id="login-password" class="form-control" placeholder="Minimal 6 karakter" required>
+                    <div class="error-message" id="login-password-error"></div>
                 </div>
-                <button 
-                    type="submit" 
-                    class="w-full bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600 transition duration-200"
-                >
-                    Login
-                </button>
+                <button type="submit" class="btn">Masuk</button>
             </form>
-            <div id="login-error" class="mt-4 p-3 bg-red-100 text-red-700 rounded-md hidden"></div>
+            <div class="auth-footer">
+                <p>Belum punya akun? <a href="#" id="go-to-register">Daftar di sini</a></p>
+            </div>
         </div>
     </div>
 
-    <!-- Halaman Dashboard -->
-    <div id="dashboard-page" class="hidden">
-        <header class="bg-white shadow-sm">
-            <div class="container mx-auto px-4 py-4 flex justify-between items-center">
-                <h1 class="text-xl font-bold">Dashboard Materi</h1>
-                <div class="flex items-center space-x-4">
-                    <span id="user-email" class="text-gray-700"></span>
-                    <button 
-                        id="logout-btn" 
-                        class="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition duration-200"
-                    >
-                        Logout
-                    </button>
+    <!-- Register Page -->
+    <div id="register-page" class="auth-container" style="display: none;">
+        <div class="auth-card">
+            <div class="auth-header">
+                <h1><i class="fas fa-book-open"></i> MateriKu</h1>
+                <p>Buat akun baru</p>
+            </div>
+            <form id="register-form">
+                <div class="form-group">
+                    <label for="register-email">Email</label>
+                    <input type="email" id="register-email" class="form-control" placeholder="nama@contoh.com" required>
+                    <div class="error-message" id="register-email-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="register-password">Password</label>
+                    <input type="password" id="register-password" class="form-control" placeholder="Minimal 6 karakter" required>
+                    <div class="error-message" id="register-password-error"></div>
+                </div>
+                <div class="form-group">
+                    <label for="register-confirm-password">Konfirmasi Password</label>
+                    <input type="password" id="register-confirm-password" class="form-control" placeholder="Ulangi password" required>
+                    <div class="error-message" id="register-confirm-password-error"></div>
+                </div>
+                <button type="submit" class="btn">Daftar</button>
+            </form>
+            <div class="auth-footer">
+                <p>Sudah punya akun? <a href="#" id="go-to-login">Masuk di sini</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dashboard Page -->
+    <div id="dashboard-page" style="display: none;">
+        <header class="dashboard-header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">MateriKu</div>
+                    <div class="user-info">
+                        <span class="user-email" id="user-email"></span>
+                        <button class="btn btn-logout" id="logout-btn">Keluar</button>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <main class="container mx-auto px-4 py-8">
-            <h2 class="text-2xl font-bold mb-6">Daftar Materi Pembelajaran</h2>
-            
-            <div id="loading" class="text-center py-8">
-                <p class="text-gray-600">Memuat materi...</p>
-            </div>
-            
-            <div id="materials-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 hidden">
-                <!-- Kartu materi akan ditambahkan di sini oleh JavaScript -->
-            </div>
-            
-            <div id="no-materials" class="text-center py-8 hidden">
-                <p class="text-gray-600">Tidak ada materi yang tersedia.</p>
+        <main class="dashboard-content">
+            <div class="container">
+                <h1 class="section-title">Materi Pembelajaran</h1>
+                <div id="materials-container" class="materials-grid">
+                    <!-- Materials will be loaded here -->
+                </div>
             </div>
         </main>
     </div>
 
-    <!-- Modal untuk menampilkan konten materi -->
+    <!-- Material Detail Modal -->
     <div id="material-modal" class="modal">
         <div class="modal-content">
-            <div class="flex justify-between items-center mb-4">
-                <h3 id="modal-title" class="text-xl font-bold"></h3>
-                <button id="close-modal" class="text-gray-500 hover:text-gray-700">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-                    </svg>
-                </button>
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title"></h2>
+                <button class="btn-close" id="close-modal">&times;</button>
             </div>
-            <div id="modal-description" class="text-gray-600 mb-4"></div>
-            <div id="modal-content" class="prose max-w-none"></div>
+            <div class="modal-body">
+                <div class="modal-content-text" id="modal-content"></div>
+            </div>
         </div>
     </div>
 
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Konfigurasi Supabase
-        const SUPABASE_URL = 'https://your-project.supabase.co';
-        const SUPABASE_ANON_KEY = 'your-anon-key';
+        // Supabase Configuration
+        const SUPABASE_URL = 'https://your-project.supabase.co'; // Ganti dengan URL Supabase Anda
+        const SUPABASE_ANON_KEY = 'your-anon-key'; // Ganti dengan anon key Anda
         
-        // Inisialisasi Supabase
+        // Inisialisasi Supabase client
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        // Elemen DOM
+
+        // DOM Elements
         const loginPage = document.getElementById('login-page');
+        const registerPage = document.getElementById('register-page');
         const dashboardPage = document.getElementById('dashboard-page');
         const loginForm = document.getElementById('login-form');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const emailError = document.getElementById('email-error');
-        const passwordError = document.getElementById('password-error');
-        const loginError = document.getElementById('login-error');
-        const userEmail = document.getElementById('user-email');
+        const registerForm = document.getElementById('register-form');
         const logoutBtn = document.getElementById('logout-btn');
-        const materialsGrid = document.getElementById('materials-grid');
-        const loading = document.getElementById('loading');
-        const noMaterials = document.getElementById('no-materials');
+        const userEmail = document.getElementById('user-email');
+        const materialsContainer = document.getElementById('materials-container');
         const materialModal = document.getElementById('material-modal');
         const modalTitle = document.getElementById('modal-title');
-        const modalDescription = document.getElementById('modal-description');
         const modalContent = document.getElementById('modal-content');
         const closeModal = document.getElementById('close-modal');
-        
-        // Validasi email
-        function isValidEmail(email) {
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return emailRegex.test(email);
+        const goToRegister = document.getElementById('go-to-register');
+        const goToLogin = document.getElementById('go-to-login');
+
+        // Event Listeners
+        document.addEventListener('DOMContentLoaded', initApp);
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        logoutBtn.addEventListener('click', handleLogout);
+        closeModal.addEventListener('click', () => materialModal.style.display = 'none');
+        goToRegister.addEventListener('click', () => {
+            loginPage.style.display = 'none';
+            registerPage.style.display = 'flex';
+        });
+        goToLogin.addEventListener('click', () => {
+            registerPage.style.display = 'none';
+            loginPage.style.display = 'flex';
+        });
+
+        // Initialize the application
+        async function initApp() {
+            // Check if user is already logged in
+            const { data: { session } } = await supabase.auth.getSession();
+            
+            if (session) {
+                // User is logged in, show dashboard
+                showDashboard(session.user.email);
+                loadMaterials();
+            } else {
+                // User is not logged in, show login page
+                showLogin();
+            }
+            
+            // Listen for auth state changes
+            supabase.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_IN' && session) {
+                    showDashboard(session.user.email);
+                    loadMaterials();
+                } else if (event === 'SIGNED_OUT') {
+                    showLogin();
+                }
+            });
         }
-        
-        // Validasi form login
-        function validateLoginForm() {
-            let isValid = true;
+
+        // Show login page
+        function showLogin() {
+            loginPage.style.display = 'flex';
+            registerPage.style.display = 'none';
+            dashboardPage.style.display = 'none';
+        }
+
+        // Show register page
+        function showRegister() {
+            loginPage.style.display = 'none';
+            registerPage.style.display = 'flex';
+            dashboardPage.style.display = 'none';
+        }
+
+        // Show dashboard
+        function showDashboard(email) {
+            loginPage.style.display = 'none';
+            registerPage.style.display = 'none';
+            dashboardPage.style.display = 'block';
+            userEmail.textContent = email;
+        }
+
+        // Handle login
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
             
             // Reset error messages
-            emailError.classList.add('hidden');
-            passwordError.classList.add('hidden');
+            resetErrorMessages();
             
-            // Validasi email
-            if (!isValidEmail(emailInput.value)) {
-                emailError.classList.remove('hidden');
-                isValid = false;
-            }
-            
-            // Validasi password
-            if (passwordInput.value.length < 6) {
-                passwordError.classList.remove('hidden');
-                isValid = false;
-            }
-            
-            return isValid;
-        }
-        
-        // Login dengan Supabase
-        async function login(email, password) {
-            try {
-                const { data, error } = await supabase.auth.signInWithPassword({
-                    email,
-                    password
-                });
-                
-                if (error) throw error;
-                
-                return data;
-            } catch (error) {
-                throw error;
-            }
-        }
-        
-        // Logout
-        async function logout() {
-            try {
-                const { error } = await supabase.auth.signOut();
-                if (error) throw error;
-                
-                // Redirect ke halaman login
-                window.location.href = 'index.html';
-            } catch (error) {
-                console.error('Error logging out:', error.message);
-            }
-        }
-        
-        // Ambil materi dari database
-        async function fetchMaterials() {
-            try {
-                const { data, error } = await supabase
-                    .from('materials')
-                    .select('*')
-                    .order('created_at', { ascending: false });
-                
-                if (error) throw error;
-                
-                return data;
-            } catch (error) {
-                console.error('Error fetching materials:', error.message);
-                return [];
-            }
-        }
-        
-        // Tampilkan materi di dashboard
-        function displayMaterials(materials) {
-            if (materials.length === 0) {
-                loading.classList.add('hidden');
-                noMaterials.classList.remove('hidden');
+            // Validate inputs
+            if (!validateEmail(email)) {
+                showError('login-email-error', 'Email tidak valid');
                 return;
             }
             
-            loading.classList.add('hidden');
-            materialsGrid.classList.remove('hidden');
+            if (password.length < 6) {
+                showError('login-password-error', 'Password minimal 6 karakter');
+                return;
+            }
             
-            materialsGrid.innerHTML = '';
-            
-            materials.forEach(material => {
-                const card = document.createElement('div');
-                card.className = 'bg-white rounded-lg shadow-md overflow-hidden';
-                
-                card.innerHTML = `
-                    <div class="p-6">
-                        <h3 class="text-xl font-bold mb-2">${material.title}</h3>
-                        <p class="text-gray-600 mb-4">${material.description}</p>
-                        <div class="flex justify-between items-center">
-                            <span class="text-sm text-gray-500">${new Date(material.created_at).toLocaleDateString('id-ID')}</span>
-                            <button 
-                                class="read-more-btn bg-blue-500 text-white py-1 px-3 rounded-md hover:bg-blue-600 transition duration-200"
-                                data-id="${material.id}"
-                            >
-                                Baca Selengkapnya
-                            </button>
-                        </div>
-                    </div>
-                `;
-                
-                materialsGrid.appendChild(card);
+            // Attempt login
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email,
+                password
             });
             
-            // Tambahkan event listener untuk tombol "Baca Selengkapnya"
-            document.querySelectorAll('.read-more-btn').forEach(button => {
+            if (error) {
+                showError('login-password-error', error.message);
+            } else {
+                // Login successful, dashboard will be shown via auth state change
+                console.log('Login berhasil:', data.user.email);
+            }
+        }
+
+        // Handle register
+        async function handleRegister(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('register-email').value;
+            const password = document.getElementById('register-password').value;
+            const confirmPassword = document.getElementById('register-confirm-password').value;
+            
+            // Reset error messages
+            resetErrorMessages();
+            
+            // Validate inputs
+            if (!validateEmail(email)) {
+                showError('register-email-error', 'Email tidak valid');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError('register-password-error', 'Password minimal 6 karakter');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError('register-confirm-password-error', 'Password tidak cocok');
+                return;
+            }
+            
+            // Attempt registration
+            const { data, error } = await supabase.auth.signUp({
+                email,
+                password
+            });
+            
+            if (error) {
+                showError('register-email-error', error.message);
+            } else {
+                alert('Pendaftaran berhasil! Silakan periksa email Anda untuk verifikasi.');
+                showLogin();
+            }
+        }
+
+        // Handle logout
+        async function handleLogout() {
+            const { error } = await supabase.auth.signOut();
+            if (error) {
+                console.error('Error logging out:', error.message);
+            }
+        }
+
+        // Load materials from Supabase
+        async function loadMaterials() {
+            materialsContainer.innerHTML = '<div class="loading"><i class="fas fa-spinner fa-spin"></i> Memuat materi...</div>';
+            
+            const { data: materials, error } = await supabase
+                .from('materials')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error loading materials:', error.message);
+                materialsContainer.innerHTML = '<div class="empty-state">Gagal memuat materi. Silakan refresh halaman.</div>';
+                return;
+            }
+            
+            if (materials.length === 0) {
+                materialsContainer.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-book"></i>
+                        <h3>Belum ada materi</h3>
+                        <p>Materi pembelajaran akan muncul di sini</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Render materials
+            materialsContainer.innerHTML = '';
+            materials.forEach(material => {
+                const materialCard = document.createElement('div');
+                materialCard.className = 'material-card';
+                materialCard.innerHTML = `
+                    <div class="card-header">
+                        <h3 class="card-title">${material.title}</h3>
+                        <div class="card-date">${formatDate(material.created_at)}</div>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-description">${material.description}</p>
+                    </div>
+                    <div class="card-footer">
+                        <button class="btn btn-read-more" data-id="${material.id}">
+                            Baca Selengkapnya
+                        </button>
+                    </div>
+                `;
+                materialsContainer.appendChild(materialCard);
+            });
+            
+            // Add event listeners to "Read More" buttons
+            document.querySelectorAll('.btn-read-more').forEach(button => {
                 button.addEventListener('click', () => {
                     const materialId = button.getAttribute('data-id');
-                    const material = materials.find(m => m.id == materialId);
-                    
-                    if (material) {
-                        showMaterialModal(material);
-                    }
+                    showMaterialDetail(materialId, materials);
                 });
             });
         }
-        
-        // Tampilkan modal dengan konten materi
-        function showMaterialModal(material) {
-            modalTitle.textContent = material.title;
-            modalDescription.textContent = material.description;
-            modalContent.innerHTML = material.content;
-            materialModal.style.display = 'flex';
-        }
-        
-        // Tutup modal
-        function closeMaterialModal() {
-            materialModal.style.display = 'none';
-        }
-        
-        // Cek status autentikasi
-        async function checkAuthStatus() {
-            const { data } = await supabase.auth.getSession();
+
+        // Show material detail in modal
+        function showMaterialDetail(materialId, materials) {
+            const material = materials.find(m => m.id == materialId);
             
-            if (data.session) {
-                // Pengguna sudah login
-                loginPage.classList.add('hidden');
-                dashboardPage.classList.remove('hidden');
-                userEmail.textContent = data.session.user.email;
-                
-                // Ambil dan tampilkan materi
-                const materials = await fetchMaterials();
-                displayMaterials(materials);
-            } else {
-                // Pengguna belum login
-                loginPage.classList.remove('hidden');
-                dashboardPage.classList.add('hidden');
+            if (material) {
+                modalTitle.textContent = material.title;
+                modalContent.innerHTML = material.content;
+                materialModal.style.display = 'flex';
             }
         }
-        
-        // Event Listeners
-        loginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            if (!validateLoginForm()) return;
-            
-            try {
-                loginError.classList.add('hidden');
-                
-                const email = emailInput.value;
-                const password = passwordInput.value;
-                
-                await login(email, password);
-                
-                // Redirect ke dashboard
-                window.location.href = 'dashboard.html';
-            } catch (error) {
-                loginError.textContent = error.message;
-                loginError.classList.remove('hidden');
-            }
-        });
-        
-        logoutBtn.addEventListener('click', logout);
-        
-        closeModal.addEventListener('click', closeMaterialModal);
-        
-        // Tutup modal saat klik di luar konten modal
-        materialModal.addEventListener('click', (e) => {
-            if (e.target === materialModal) {
-                closeMaterialModal();
-            }
-        });
-        
-        // Inisialisasi aplikasi
-        document.addEventListener('DOMContentLoaded', () => {
-            checkAuthStatus();
-            
-            // Cek perubahan status autentikasi
-            supabase.auth.onAuthStateChange((event, session) => {
-                if (event === 'SIGNED_OUT') {
-                    loginPage.classList.remove('hidden');
-                    dashboardPage.classList.add('hidden');
-                }
+
+        // Utility functions
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function showError(elementId, message) {
+            const errorElement = document.getElementById(elementId);
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function resetErrorMessages() {
+            document.querySelectorAll('.error-message').forEach(el => {
+                el.style.display = 'none';
+                el.textContent = '';
             });
+        }
+
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('id-ID', options);
+        }
+
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === materialModal) {
+                materialModal.style.display = 'none';
+            }
         });
     </script>
 </body>
